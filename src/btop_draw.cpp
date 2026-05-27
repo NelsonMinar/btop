@@ -400,7 +400,18 @@ namespace Draw {
 		long long data_value = 0;
 		if (mult and data_offset > 0) {
 			last = data.at(data_offset - 1);
-			if (max_value > 0) last = clamp((last + offset) * 100 / max_value, 0ll, 100ll);
+			if (max_value > 0) {
+				if (log_scale) {
+					double min_val = 1024.0;
+					if (max_value <= min_val) last = 0;
+					else {
+						double val = max(min_val, (double)(last + offset));
+						last = clamp((long long)(100.0 * (log10(val) - log10(min_val)) / (log10(max_value) - log10(min_val))), 0ll, 100ll);
+					}
+				} else {
+					last = clamp((last + offset) * 100 / max_value, 0ll, 100ll);
+				}
+			}
 		}
 
 		//? Horizontal iteration over values in <data>
@@ -413,7 +424,18 @@ namespace Draw {
 			}
 			else {
 				data_value = data.at(i);
-				if (max_value > 0) data_value = clamp((data_value + offset) * 100 / max_value, 0ll, 100ll);
+				if (max_value > 0) {
+					if (log_scale) {
+						double min_val = 1024.0;
+						if (max_value <= min_val) data_value = 0;
+						else {
+							double val = max(min_val, (double)(data_value + offset));
+							data_value = clamp((long long)(100.0 * (log10(val) - log10(min_val)) / (log10(max_value) - log10(min_val))), 0ll, 100ll);
+						}
+					} else {
+						data_value = clamp((data_value + offset) * 100 / max_value, 0ll, 100ll);
+					}
+				}
 			}
 
 			//? Vertical iteration over height of graph
@@ -465,9 +487,9 @@ namespace Draw {
 
 	Graph::Graph(int width, int height, const string& color_gradient,
 				 const deque<long long>& data, const string& symbol,
-				 bool invert, bool no_zero, long long max_value, long long offset)
+				 bool invert, bool no_zero, long long max_value, long long offset, bool log_scale)
 	: width(width), height(height), color_gradient(color_gradient),
-	  invert(invert), no_zero(no_zero), offset(offset) {
+	  invert(invert), no_zero(no_zero), offset(offset), log_scale(log_scale) {
 		if (Config::getB("tty_mode") or symbol == "tty") this->symbol = "tty";
 		else if (symbol != "default") this->symbol = symbol;
 		else this->symbol = Config::getS("graph_symbol");
@@ -1470,6 +1492,7 @@ namespace Net {
 		if (force_redraw) redraw = true;
 		auto net_sync = Config::getB("net_sync");
 		auto net_auto = Config::getB("net_auto");
+		auto net_log = Config::getB("net_log");
 		auto tty_mode = Config::getB("tty_mode");
 		auto swap_upload_download = Config::getB("swap_upload_download");
 		auto& graph_symbol = (tty_mode ? "tty" : Config::getS("graph_symbol_net"));
@@ -1497,10 +1520,10 @@ namespace Net {
 			graphs["download"] = Draw::Graph{
 				width - b_width - 2, u_graph_height, "download",
 				net.bandwidth.at("download"), graph_symbol,
-				swap_upload_download, true, down_max};
+				swap_upload_download, true, down_max, 0, net_log};
 			graphs["upload"] = Draw::Graph{
 				width - b_width - 2, d_graph_height, "upload",
-				net.bandwidth.at("upload"), graph_symbol, !swap_upload_download, true, up_max};
+				net.bandwidth.at("upload"), graph_symbol, !swap_upload_download, true, up_max, 0, net_log};
 
 			//? Interface selector and buttons
 

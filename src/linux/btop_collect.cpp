@@ -1052,29 +1052,34 @@ namespace Cpu {
         return value;
     }
 
-    static constexpr auto detect_active_cpus() {
+    static auto detect_active_cpus() {
         auto stream = std::ifstream { "/sys/fs/cgroup/cpuset.cpus.effective" };
         auto buf = std::string { std::istreambuf_iterator<char> { stream }, {} };
+        std::vector<std::int32_t> out;
 
         if (buf.empty()) {
-            return std::views::iota(0, Shared::coreCount) | std::ranges::to<std::vector<std::int32_t>>();
+            for (auto i : std::views::iota(0, Shared::coreCount)) {
+                out.push_back(i);
+            }
+            return out;
         }
 
-        return buf | std::views::split(',') | std::views::transform([](auto&& range) -> auto {
-                   auto view = std::string_view { range };
-                   auto dash = view.find('-');
+        for (const auto& range : buf | std::views::split(',')) {
+            auto view = std::string_view { range };
+            auto dash = view.find('-');
 
-                   if (dash == std::string_view::npos) {
-                       // Single CPU, return iota of single element
-                       auto value = to_int(view);
-                       return std::views::iota(value, value + 1);
-                   }
-
-                   auto start = to_int(view.substr(0, dash));
-                   auto end = to_int(view.substr(dash + 1));
-                   return std::views::iota(start, end + 1);
-               }) |
-               std::views::join | std::ranges::to<std::vector<std::int32_t>>();
+            if (dash == std::string_view::npos) {
+                // Single CPU
+                out.push_back(to_int(view));
+            } else {
+                auto start = to_int(view.substr(0, dash));
+                auto end = to_int(view.substr(dash + 1));
+                for (auto i : std::views::iota(start, end + 1)) {
+                    out.push_back(i);
+                }
+            }
+        }
+        return out;
     }
 
 	auto collect(bool no_update) -> cpu_info& {
