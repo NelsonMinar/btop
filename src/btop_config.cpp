@@ -217,8 +217,6 @@ namespace Config {
 
 		{"net_auto", 			"#* Use network graphs auto rescaling mode, ignores any values set above and rescales down to 10 Kibibytes at the lowest."},
 
-		{"net_log", 			"#* Use logarithmic scale for network graphs."},
-
 		{"net_sync", 			"#* Sync the auto scaling for download and upload to whichever currently has the highest scale."},
 
 		{"net_iface", 			"#* Starts with the Network Interface specified here."},
@@ -333,7 +331,6 @@ namespace Config {
 		{"base_10_sizes", false},
 		{"io_graph_combined", false},
 		{"net_auto", true},
-		{"net_log", false},
 		{"net_sync", true},
 		{"show_battery", true},
 		{"show_battery_watts", true},
@@ -540,7 +537,7 @@ namespace Config {
 	bool intValid(const std::string_view name, const string& value) {
 		int i_value;
 		try {
-			i_value = std::stoi(value);
+			i_value = stoi(value);
 		}
 		catch (const std::invalid_argument&) {
 			validError = "Invalid numerical value!";
@@ -702,7 +699,7 @@ namespace Config {
 			if (not v_contains(valid_boxes, box)) return false;
 		#ifdef GPU_SUPPORT
 			if (box.starts_with("gpu")) {
-				int gpu_num = std::stoi(box.substr(3)) + 1;
+				int gpu_num = stoi(box.substr(3)) + 1;
 				if (gpu_num > Gpu::count) return false;
 			}
 		#endif
@@ -786,7 +783,7 @@ namespace Config {
 						load_warnings.push_back(validError);
 					}
 					else
-						ints.at(name) = std::stoi(value);
+						ints.at(name) = stoi(value);
 				}
 				else if (strings.contains(name)) {
 					if (cread.peek() == '"') {
