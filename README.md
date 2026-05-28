@@ -1,26 +1,6 @@
-# ![btop++](Img/logo.png)
+# About this fork
 
-<a href="https://repology.org/project/btop/versions">
-    <img src="https://repology.org/badge/vertical-allrepos/btop.svg" alt="Packaging status" align="right">
-</a>
-
-![Linux](https://img.shields.io/badge/-Linux-grey?logo=linux)
-![macOS](https://img.shields.io/badge/-OSX-black?logo=apple)
-![FreeBSD](https://img.shields.io/badge/-FreeBSD-red?logo=freebsd)
-![NetBSD](https://img.shields.io/badge/-NetBSD-black?logo=netbsd)
-![OpenBSD](https://img.shields.io/badge/-OpenBSD-black?logo=openbsd)
-![Usage](https://img.shields.io/badge/Usage-System%20resource%20monitor-yellow)
-![c++23](https://img.shields.io/badge/cpp-c%2B%2B23-green)
-![latest_release](https://img.shields.io/github/v/tag/aristocratos/btop?label=release)
-[![Donate](https://img.shields.io/badge/-Donate-yellow?logo=paypal)](https://paypal.me/aristocratos)
-[![Sponsor](https://img.shields.io/badge/-Sponsor-red?logo=github)](https://github.com/sponsors/aristocratos)
-[![Coffee](https://img.shields.io/badge/-Buy%20me%20a%20Coffee-grey?logo=Ko-fi)](https://ko-fi.com/aristocratos)
-[![btop](https://snapcraft.io/btop/badge.svg)](https://snapcraft.io/btop)
-[![Continuous Build Linux](https://github.com/aristocratos/btop/actions/workflows/continuous-build-linux.yml/badge.svg)](https://github.com/aristocratos/btop/actions/workflows/continuous-build-linux.yml)
-[![Continuous Build macOS](https://github.com/aristocratos/btop/actions/workflows/continuous-build-macos.yml/badge.svg)](https://github.com/aristocratos/btop/actions/workflows/continuous-build-macos.yml)
-[![Continuous Build FreeBSD](https://github.com/aristocratos/btop/actions/workflows/continuous-build-freebsd.yml/badge.svg)](https://github.com/aristocratos/btop/actions/workflows/continuous-build-freebsd.yml)
-[![Continuous Build NetBSD](https://github.com/aristocratos/btop/actions/workflows/continuous-build-netbsd.yml/badge.svg)](https://github.com/aristocratos/btop/actions/workflows/continuous-build-netbsd.yml)
-[![Continuous Build OpenBSD](https://github.com/aristocratos/btop/actions/workflows/continuous-build-openbsd.yml/badge.svg)](https://github.com/aristocratos/btop/actions/workflows/continuous-build-openbsd.yml)
+This is a quick experimental fork to have an AI add scaling to the network graph so you can see low bandwidth traffic more easily. It works but I'm not sure it's worth submitting as a feature to the main branch. I will probably just abandon this fork.
 
 ## Index
 
