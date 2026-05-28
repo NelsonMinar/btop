@@ -612,6 +612,10 @@ namespace Input {
 					Config::flip("net_sync");
 					Net::rescale = true;
 				}
+				else if (key == "c") {
+					Config::flip("net_scale");
+					Net::rescale = true;
+				}
 				else if (key == "a") {
 					Config::flip("net_auto");
 					Net::rescale = true;
