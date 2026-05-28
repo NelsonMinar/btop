@@ -219,6 +219,8 @@ namespace Config {
 
 		{"net_sync", 			"#* Sync the auto scaling for download and upload to whichever currently has the highest scale."},
 
+		{"net_scale", 			"#* Scale the network graphs using an exponent function (bandwidth ^ 1/3) instead of linear."},
+
 		{"net_iface", 			"#* Starts with the Network Interface specified here."},
 
 	    {"base_10_bitrate",     "#* \"True\" shows bitrates in base 10 (Kbps, Mbps). \"False\" shows bitrates in binary sizes (Kibps, Mibps, etc.). \"Auto\" uses base_10_sizes."},
@@ -332,6 +334,7 @@ namespace Config {
 		{"io_graph_combined", false},
 		{"net_auto", true},
 		{"net_sync", true},
+		{"net_scale", false},
 		{"show_battery", true},
 		{"show_battery_watts", true},
 		{"vim_keys", false},

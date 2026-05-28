@@ -1467,6 +1467,15 @@ namespace Net {
 
 	string draw(const net_info& net, bool force_redraw, bool data_same) {
 		if (Runner::stopping) return "";
+		auto net_scale = Config::getB("net_scale");
+		auto scale_net_value = [&](long long value, long long max_val) -> long long {
+			if (!net_scale) return value;
+			if (value <= 0 or max_val <= 0) return 0;
+			const double exp = 1.0 / 3.0;
+			double scaled_max = std::pow((double)max_val, exp);
+			double scaled_val = std::pow((double)value, exp);
+			return std::round((scaled_val / scaled_max) * max_val);
+		};
 		if (force_redraw) redraw = true;
 		auto net_sync = Config::getB("net_sync");
 		auto net_auto = Config::getB("net_auto");
@@ -1494,13 +1503,25 @@ namespace Net {
 			if (safeVal(net.bandwidth, "download"s).empty() or safeVal(net.bandwidth, "upload"s).empty())
 				return out + Fx::reset;
 
+
+
+			deque<long long> scaled_download;
+			for (const auto& val : net.bandwidth.at("download")) {
+				scaled_download.push_back(scale_net_value(val, down_max));
+			}
+
+			deque<long long> scaled_upload;
+			for (const auto& val : net.bandwidth.at("upload")) {
+				scaled_upload.push_back(scale_net_value(val, up_max));
+			}
+
 			graphs["download"] = Draw::Graph{
 				width - b_width - 2, u_graph_height, "download",
-				net.bandwidth.at("download"), graph_symbol,
+				scaled_download, graph_symbol,
 				swap_upload_download, true, down_max};
 			graphs["upload"] = Draw::Graph{
 				width - b_width - 2, d_graph_height, "upload",
-				net.bandwidth.at("upload"), graph_symbol, !swap_upload_download, true, up_max};
+				scaled_upload, graph_symbol, !swap_upload_download, true, up_max};
 
 			//? Interface selector and buttons
 
@@ -1520,6 +1541,11 @@ namespace Net {
 					+ 'y' + Theme::c("title") + "nc" + title_right;
 				Input::mouse_mappings["y"] = {y, x+width - i_size - 26, 1, 4};
 			}
+			if (width - i_size - 20 > 22) {
+				out += Mv::to(y, x+width - i_size - 36) + title_left + Theme::c("title") + (net_scale ? Fx::b : "") + 's' + Theme::c("hi_fg")
+					+ 'c' + Theme::c("title") + "ale" + title_right;
+				Input::mouse_mappings["c"] = {y, x+width - i_size - 35, 1, 5};
+			}
 		}
 
 		//? IP or device address
@@ -1538,7 +1564,12 @@ namespace Net {
 			} else {
 				out += Mv::to(y + u_graph_height + 1 + ((height * swap_upload_download) % 2), x + 1);
 			}
-			out += graphs.at(dir)(safeVal(net.bandwidth, dir), redraw or data_same or not net.connected)
+			deque<long long> scaled_data;
+			long long current_max = (dir == "upload" ? up_max : down_max);
+			for (const auto& val : safeVal(net.bandwidth, dir)) {
+				scaled_data.push_back(scale_net_value(val, current_max));
+			}
+			out += graphs.at(dir)(scaled_data, redraw or data_same or not net.connected)
 				+ Mv::to(y+1 + (((dir == "upload") == (!swap_upload_download)) * (height - 3)), x + 1) + Fx::ub + Theme::c("graph_text")
 				+ floating_humanizer((dir == "upload" ? up_max : down_max), true);
 			const string speed = floating_humanizer(safeVal(net.stat, dir).speed, false, 0, false, true);
